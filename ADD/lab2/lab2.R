@@ -89,6 +89,14 @@ datos <- datos %>% filter(datos$age < 150)
 
 datos <- datos%>% select(-TBG)
 datos <- datos%>% select(-"TBG measured")
+datos <- datos%>% select(-"TSH measured")
+datos <- datos%>% select(-"T3 measured")
+datos <- datos%>% select(-"TT4 measured")
+datos <- datos%>% select(-"FTI measured")
+datos <- datos%>% select(-"T4U measured")
+datos <- datos%>% select(-"referral source")
+datos <- datos%>% select(-"query on thyroxine")
+datos <- datos%>% select(-"query hyperthyroid")
 datos <- na.omit(datos)
 
 #----------------------------------------------------------#
@@ -96,16 +104,20 @@ datos <- na.omit(datos)
 
 #variables numericas
 
-datos_numericos <- data.frame("Edad"=datos$age,
+datos_numericos_edad <- data.frame("Edad"=datos$age,
                               "TSH"= datos$TSH,
                               "T3" = datos$T3,
                               "T4U" =datos$T4U,
                               "TT4" =datos$TT4)
 
-
+datos_numericos <- data.frame(
+                              "TSH"= datos$TSH,
+                              "T3" = datos$T3,
+                              "T4U" =datos$T4U,
+                              "TT4" =datos$TT4)
 #Normalizando
 datos_numericos <- scale(datos_numericos)
-colnames(datos_numericos) <- c('Edad','TSH','T3',"T4U","TT4")
+colnames(datos_numericos) <- c('TSH','T3',"T4U","TT4")
 
 
 
@@ -122,11 +134,11 @@ fviz_nbclust(x = datos_numericos, FUNcluster = kmeans, method = "wss", diss = di
 fviz_nbclust(x = datos_numericos, FUNcluster = kmeans, method = "silhouette",diss = distancia_man)
 
 
-# k means
+#k - means
 
-kmeans_6 <- kmeans(datos_numericos, 6, iter.max = 1000, nstart = 10)
-kmeans_7 <- kmeans(datos_numericos, 7, iter.max = 1000, nstart = 10)
-kmeans_8 <- kmeans(datos_numericos, 8, iter.max = 1000, nstart = 10)
+kmeans_6 <- kmeans(datos_numericos, 7, iter.max = 1000, nstart = 10)
+kmeans_7 <- kmeans(datos_numericos, 8, iter.max = 1000, nstart = 10)
+kmeans_8 <- kmeans(datos_numericos, 9, iter.max = 1000, nstart = 10)
 
 
 #----------------------------------------------------------------#
@@ -163,22 +175,20 @@ datos_transformados <- datos_transformados %>%
 
 
 datos_normalizados <- datos
-datos_normalizados$age <- scale(datos$age)
-datos_normalizados$FTI <- scale(datos$FTI)
+#datos_normalizados$age <- scale(datos$age)
+#datos_normalizados$FTI <- scale(datos$FTI)
 
 prueba <- sample_n(datos,20)
 
 #Distancias
-gower_dist <- daisy(datos, metric = "gower", type=list(ordratio = c(2, 27,28), 
-                                                       symm = c(3:17,19,21,23,25),
-                                                       logratio = c(1,26)))
-gower_dist2 <- daisy(datos, metric = "gower", type=list(ordratio = c(2, 27,28), 
-                                                        symm = c(3:17,19,21,23,25)))
+gower_dist <- daisy(datos, metric = "gower", type=list(ordratio = c(2, 20), 
+                                                       symm = c(3:14)))
+#gower_dist2 <- daisy(datos, metric = "gower", type=list(ordratio = c(2, 27,28), symm = c(3:17,19,21,23,25)))
 summary(gower_dist)
-summary(gower_dist2)
+#summary(gower_dist2)
 
 #gower_dist <- daisy(prueba, metric = "gower", type=list(ordratio = c(2, 27,28), symm = c(3:17,19,21,23,25)))
-#gower_dist <- daisy(datos, metric = "gower", type=list(ordratio = c(2, 27,28), symm = c(3:17,19,21,23,25)))
+gower_dist <- daisy(datos, metric = "gower", type=list(ordratio = c(2, 27,28), symm = c(3:17,19,21,23,25)))
 
 
 

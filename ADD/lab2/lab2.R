@@ -170,77 +170,131 @@ datos_transformados <- datos_transformados %>%
 
 
 #---------------------------------------------#
-#Normalizando datos
 
-datos_normalizados <- datos_transformados
-datos_normalizados$age <- scale(datos_normalizados$age)
-datos_normalizados$FTI <- scale(datos_normalizados$FTI)
-datos_normalizados$TT4 <- scale(datos_normalizados$TT4)
 
 #Distancias
-
-
-
-
-gower_dist <- daisy(datos_transformados, metric = "gower", type = list(symm = c(7:37),
+gower_dist <- daisy(datos_transformados, metric = "gower", type = list(symm = c(7:33),
                                                                        logratio = c(1:6))) 
 
 
 
-#-----------Estimar numero de cluster------------
-#wss <- fviz_nbclust(x = datos_normalizados, FUNcluster = pam, method = "wss", diss = gower_dist)
-#silueta <- fviz_nbclust(x = datos_normalizados, FUNcluster = pam, method = "silhouette", diss = gower_dist)
+#-----------Estamación jerárquica------------
 
-#plot(wss)
-#plot(silueta)
-
-
-
-#otro grafico jj
-
-pam_clusters <- pam(x = datos_normalizados, k = 4)
+#Método jerárquico
 
 arbol <- hclust(d = gower_dist,
                 method = "ward.D2")
 
 
+# Cree un gráfico de todo el dendrograma
+# y estraiga los datos del dendrograma
+dendrograma <- fviz_dend(arbol)
+print(dendrograma)
+
+
+dend_data <- attr(dendrograma, "dendrogram") #  Extraer datos de dendrogramas
+
+# Cortar el dendrograma a la altura h = 10
+dend_cuts <- cut(dend_data, h = 5)
+
+
+#Visualizando los grupos
+fviz_dend(dend_cuts$lower[[1]][[1]][[1]][[1]], main = "Subtree 1")
+
+subtree_1 <- rbind(datos_transformados[1215,],
+                   datos_transformados[2014,],
+                   datos_transformados[1367,],
+                   datos_transformados[1198,],
+                   datos_transformados[77,],
+                   datos_transformados[684,],
+                   datos_transformados[724,],
+                   datos_transformados[148,],
+                   datos_transformados[1924,],
+                   datos_transformados[144,],
+                   datos_transformados[1090,],
+                   datos_transformados[404,],
+                   datos_transformados[1097,],
+                   datos_transformados[1665,],
+                   datos_transformados[546,],
+                   datos_transformados[621,],
+                   datos_transformados[207,],
+                   datos_transformados[1772,],
+                   datos_transformados[761,],
+                   datos_transformados[644,],
+                   datos_transformados[801,],
+                   datos_transformados[1439,],
+                   datos_transformados[885,],
+                   datos_transformados[1729,],
+                   datos_transformados[798,],
+                   datos_transformados[2000,],
+                   datos_transformados[573,],
+                   datos_transformados[425,],
+                   datos_transformados[1639,]
+                   )
+
+
+
+fviz_dend(dend_cuts$lower[[1]][[1]][[2]][[2]], main = "Subtree 2")
+subtree_2 <- rbind(datos_transformados[865,],
+                   datos_transformados[1624,],
+                   datos_transformados[1255,],
+                   datos_transformados[518,],
+                   datos_transformados[880,],
+                   datos_transformados[895,],
+                   datos_transformados[364,],
+                   datos_transformados[1069,])
+
+
+
+#fviz_dend(dend_cuts$lower[[2]][[2]][[1]][[2]], main = "Subtree 3")
+
+
+
+#---------------------------No jerarquico--------------------
+#Método no jerarquico
+
+wss <- fviz_nbclust(x = datos_transformados, FUNcluster = pam, method = "wss", diss = gower_dist)
+silueta <- fviz_nbclust(x = datos_transformados, FUNcluster = pam, method = "silhouette", diss = gower_dist)
+
+
+pam_clusters_2 <- pam(x = datos_transformados, k = 2)
+pam_clusters_4 <- pam(x = datos_transformados, k = 4)
+pam_clusters_6 <- pam(x = datos_transformados, k = 6)
+
+
+
 #Grafico mas cuadrado
 
-fviz_cluster(object = pam_clusters,
-             ellipse.type = "convex", 
+#------ K = 2 ------#
+cluster_k2 <- fviz_cluster(object = pam_clusters_2,
              repel = TRUE, 
              show.clust.cent = FALSE,
              labelsize = 8)  +
   labs(title = "-------",
+       subtitle = "Distancia gower, K=2") +
+  theme_bw() +
+  theme(legend.position = "bottom")
+print(cluster_k2)
+
+#------ K = 4 ------#
+cluster_k4 <- fviz_cluster(object = pam_clusters_4,
+                           repel = TRUE, 
+                           show.clust.cent = FALSE,
+                           labelsize = 8)  +
+  labs(title = "-------",
        subtitle = "Distancia gower, K=4") +
   theme_bw() +
   theme(legend.position = "bottom")
+print(cluster_k4)
 
-#Dendograma circular
-
-circular <- fviz_dend(arbol, k = 4,
-                 rect = TRUE,
-                 k_colors = "jco",
-                 rect_border = "jco",
-                 rect_fill = TRUE,
-                 type = "circular")
-
-
-# Circulitos
-
-g2 <- fviz_cluster(object = pam_clusters, data = datos_normalizados, show.clust.cent = TRUE,
-             ellipse.type = "euclid", star.plot = TRUE, repel = TRUE) +
-  labs(title = "Resultados clustering K-means") +
+#------ K = 6 ------#
+cluster_k6 <- fviz_cluster(object = pam_clusters_6,
+             repel = TRUE, 
+             show.clust.cent = FALSE,
+             labelsize = 8)  +
+  labs(title = "-------",
+       subtitle = "Distancia gower, K=6") +
   theme_bw() +
-  theme(legend.position = "none")
-
-
-print(g2)
-
-
-
-
-
-#-------------------------------------------------------------------------------------------#
-
+  theme(legend.position = "bottom")
+print(cluster_k6)
 

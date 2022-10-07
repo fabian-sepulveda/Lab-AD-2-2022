@@ -7,15 +7,11 @@ library(tidyverse)
 
 library(cluster)
 library(factoextra)
-library(vegan)
 #------------------------------------------#
-jaccard <- function(a, b) {
-  intersection = length(intersect(a, b))
-  union = length(a) + length(b) - intersection
-  return (intersection/union)
-}
 
 #--- LEYENDO Y DEJANDO LISTOS LOS DATOS ---#
+
+set.seed(123)
 
 datos <- read.csv2("C:/Users/osswa/OneDrive/Escritorio/02-2022/Análisis de datos/Laboratorio/allhypo.data", 
                    sep = ",",
@@ -97,48 +93,10 @@ datos <- datos%>% select(-"T4U measured")
 datos <- datos%>% select(-"referral source")
 datos <- datos%>% select(-"query on thyroxine")
 datos <- datos%>% select(-"query hyperthyroid")
+datos <- datos%>% select(-"class")
 datos <- na.omit(datos)
 
-#----------------------------------------------------------#
-#REVISANDO SOLO LAS VARIABLES NUMÉRICAS
 
-#variables numericas
-
-datos_numericos_edad <- data.frame("Edad"=datos$age,
-                              "TSH"= datos$TSH,
-                              "T3" = datos$T3,
-                              "T4U" =datos$T4U,
-                              "TT4" =datos$TT4)
-
-datos_numericos <- data.frame(
-                              "TSH"= datos$TSH,
-                              "T3" = datos$T3,
-                              "T4U" =datos$T4U,
-                              "TT4" =datos$TT4)
-#Normalizando
-datos_numericos <- scale(datos_numericos)
-colnames(datos_numericos) <- c('TSH','T3',"T4U","TT4")
-
-
-
-
-#Calculando distancia
-distancia_euc <- dist(datos, method = "euclidean")
-distancia_man <- dist(datos, method = "manhattan")
-
-#Analizando cantidad optima de clusters
-fviz_nbclust(x = datos_numericos, FUNcluster = kmeans, method = "wss", diss = distancia_euc)
-fviz_nbclust(x = datos_numericos, FUNcluster = kmeans, method = "silhouette",diss = distancia_euc)
-
-fviz_nbclust(x = datos_numericos, FUNcluster = kmeans, method = "wss", diss = distancia_man)
-fviz_nbclust(x = datos_numericos, FUNcluster = kmeans, method = "silhouette",diss = distancia_man)
-
-
-#k - means
-
-kmeans_6 <- kmeans(datos_numericos, 7, iter.max = 1000, nstart = 10)
-kmeans_7 <- kmeans(datos_numericos, 8, iter.max = 1000, nstart = 10)
-kmeans_8 <- kmeans(datos_numericos, 9, iter.max = 1000, nstart = 10)
 
 
 #----------------------------------------------------------------#
@@ -150,60 +108,135 @@ kmeans_8 <- kmeans(datos_numericos, 9, iter.max = 1000, nstart = 10)
 datos_transformados <- datos
 
 datos_transformados <- datos_transformados %>% 
-  mutate(sex = paste("sex", sex, sep = "_"),
+  mutate(
+  sex = paste("sex", sex, sep = "_"),
   valor_sex = 1,
   
   "on thyroxine" = paste("on thyroxine",`on thyroxine`, sep = "_" ),
   valor_thyroxine = 1,
   
-  "query on thyroxine" = paste("query on thyroxine", `query on thyroxine`, sep = "_"),
-  valor_query_thy = 1) %>% 
+  "query hypothyroid" = paste("query hypothyroid",`query hypothyroid`, sep = "_" ),
+  valor_query_hypo = 1,
+  
+  "on antithyroid medication" = paste("on antithyroid medication", `on antithyroid medication`, sep = "_"),
+  valor_anti_thy = 1,
+  
+  "sick" = paste("sick", sick, sep = "_"),
+  valor_sick = 1,
+  
+  "pregnant" = paste("pregnant", `pregnant`, sep = "_"),
+  valor_pregnat = 1,
+  
+  "thyroid surgery" = paste("thyroid surgery", `thyroid surgery`, sep = "_"),
+  valor_surgery = 1,
+  
+  "I131 treatment" = paste("I131 treatment", `I131 treatment`, sep = "_"),
+  valor_I131 = 1,
+  
+  "lithium" = paste("lithium", `lithium`, sep = "_"),
+  valor_lit = 1,
+  
+  "goitre" = paste("goitre", `goitre`, sep = "_"),
+  valor_goit = 1,
+  
+  "tumor" = paste("tumor", `tumor`, sep = "_"),
+  valor_tumor = 1,
+  
+  "hypopituitary" = paste("hypopituitary", `hypopituitary`, sep = "_"),
+  valor_hypopi = 1,
+  
+  "psych" = paste("psych", `psych`, sep = "_"),
+  valor_psych = 1
+  
+  ) %>% 
     spread(key = sex, value = valor_sex,fill = 0) %>%
+    spread(key = `query hypothyroid`, value = valor_query_hypo,fill = 0) %>%
     spread(key = `on thyroxine`, value = valor_thyroxine,fill = 0) %>%
-    spread(key = `query on thyroxine`, value = valor_query_thy, fill = 0)
+    spread(key = `on antithyroid medication`, value = valor_anti_thy, fill = 0) %>%
+    spread(key = sick, value = valor_sick,fill = 0) %>%
+    spread(key = pregnant, value = valor_pregnat,fill = 0) %>%
+    spread(key = `thyroid surgery`, value = valor_surgery,fill = 0) %>%
+    spread(key = `I131 treatment`, value = valor_I131,fill = 0) %>%
+    spread(key = lithium, value = valor_lit,fill = 0) %>%
+    spread(key = goitre, value = valor_goit,fill = 0) %>%
+    spread(key = tumor, value = valor_tumor,fill = 0) %>%
+    spread(key = hypopituitary, value = valor_hypopi,fill = 0) %>%
+    spread(key = psych, value = valor_psych,fill = 0) 
+  
+  
 
 
 
 
 
-#-------------------------------------------------------------------------------------------#
+#---------------------------------------------#
+#Normalizando datos
 
-#----------------------------------------------------------------#
-#----------------------------------------------------------------#
-#REALIZANDO ANALISIS SIN TRANSFORMAR LAS VARIABLES CATEGORICAS
-#Normalizar los datos
-
-
-datos_normalizados <- datos
-#datos_normalizados$age <- scale(datos$age)
-#datos_normalizados$FTI <- scale(datos$FTI)
-
-prueba <- sample_n(datos,20)
+datos_normalizados <- datos_transformados
+datos_normalizados$age <- scale(datos_normalizados$age)
+datos_normalizados$FTI <- scale(datos_normalizados$FTI)
+datos_normalizados$TT4 <- scale(datos_normalizados$TT4)
 
 #Distancias
-gower_dist <- daisy(datos, metric = "gower", type=list(ordratio = c(2, 20), 
-                                                       symm = c(3:14)))
-#gower_dist2 <- daisy(datos, metric = "gower", type=list(ordratio = c(2, 27,28), symm = c(3:17,19,21,23,25)))
-summary(gower_dist)
-#summary(gower_dist2)
-
-#gower_dist <- daisy(prueba, metric = "gower", type=list(ordratio = c(2, 27,28), symm = c(3:17,19,21,23,25)))
-gower_dist <- daisy(datos, metric = "gower", type=list(ordratio = c(2, 27,28), symm = c(3:17,19,21,23,25)))
 
 
 
-#Estimar numero de cluster
-#fviz_nbclust(x = , FUNcluster = pam, method = "wss", diss = distancia)
+
+gower_dist <- daisy(datos_transformados, metric = "gower", type = list(symm = c(7:37),
+                                                                       logratio = c(1:6))) 
 
 
-#Dendograma
-clustering_jerarquico <- hclust(gower_dist, method = "ward.D2")
-plot(clustering_jerarquico)
 
-rect.hclust(clustering_jerarquico, k = 6, border = "green")
+#-----------Estimar numero de cluster------------
+#wss <- fviz_nbclust(x = datos_normalizados, FUNcluster = pam, method = "wss", diss = gower_dist)
+#silueta <- fviz_nbclust(x = datos_normalizados, FUNcluster = pam, method = "silhouette", diss = gower_dist)
 
-fviz_nbclust(x = datos, FUNcluster = pam, method = "wss", k.max = 15,
-             diss = gower_dist)
+#plot(wss)
+#plot(silueta)
+
+
+
+#otro grafico jj
+
+pam_clusters <- pam(x = datos_normalizados, k = 4)
+
+arbol <- hclust(d = gower_dist,
+                method = "ward.D2")
+
+
+#Grafico mas cuadrado
+
+fviz_cluster(object = pam_clusters,
+             ellipse.type = "convex", 
+             repel = TRUE, 
+             show.clust.cent = FALSE,
+             labelsize = 8)  +
+  labs(title = "-------",
+       subtitle = "Distancia gower, K=4") +
+  theme_bw() +
+  theme(legend.position = "bottom")
+
+#Dendograma circular
+
+circular <- fviz_dend(arbol, k = 4,
+                 rect = TRUE,
+                 k_colors = "jco",
+                 rect_border = "jco",
+                 rect_fill = TRUE,
+                 type = "circular")
+
+
+# Circulitos
+
+g2 <- fviz_cluster(object = pam_clusters, data = datos_normalizados, show.clust.cent = TRUE,
+             ellipse.type = "euclid", star.plot = TRUE, repel = TRUE) +
+  labs(title = "Resultados clustering K-means") +
+  theme_bw() +
+  theme(legend.position = "none")
+
+
+print(g2)
+
 
 
 

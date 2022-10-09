@@ -209,8 +209,11 @@ dendrograma1 + dendrograma2 + dendrograma3
 # Cree un gráfico de todo el dendrograma
 # y estraiga los datos del dendrograma
 
-dendrograma <- fviz_dend(arbol, k=4)
+dendrograma <- fviz_dend(arbol, k=4, cex = 0)
 print(dendrograma)
+
+
+kkk <- attr(dendrograma, "vector")
 
 dend_data <- attr(dendrograma, "dendrogram") #  Extraer datos de dendrogramas
 
@@ -253,7 +256,7 @@ cluster_k2 <- fviz_cluster(object = pam_clusters_2,
        subtitle = "Distancia gower, K=2") +
   theme_bw() +
   theme(legend.position = "bottom")
-print(cluster_k2)
+
 
 #------ K = 4 ------#
 cluster_k4 <- fviz_cluster(object = pam_clusters_4,
@@ -264,7 +267,6 @@ cluster_k4 <- fviz_cluster(object = pam_clusters_4,
        subtitle = "Distancia gower, K=4") +
   theme_bw() +
   theme(legend.position = "bottom")
-print(cluster_k4)
 
 #------ K = 6 ------#
 cluster_k6 <- fviz_cluster(object = pam_clusters_6,
@@ -275,5 +277,77 @@ cluster_k6 <- fviz_cluster(object = pam_clusters_6,
        subtitle = "Distancia gower, K=6") +
   theme_bw() +
   theme(legend.position = "bottom")
+
+print(cluster_k2)
+print(cluster_k4)
 print(cluster_k6)
+
+
+
+
+
+#-------------------------------------------------------------#
+#Evaluar clasificacion de los cluster
+
+
+
+individuos <- str_split(datos_cluster2, " _ ", simplify = TRUE)
+individuos <- individuos[,2]
+individuos[individuos == "N"] <- "negative"
+individuos[individuos == "C"] <- "compensated hypothyroid"
+individuos[individuos == "S"] <- "secondary hypothyroid"
+individuos[individuos == "P"] <- "primary hypothyroid"
+
+individuos_clases <- data.frame("class"= individuos)
+
+datos_cluster <- datos
+datos_cluster <- cbind(datos_cluster,individuos_clases)
+
+
+levels_cluster2 <- cluster_k2[["data"]][["cluster"]]
+cluster_clasificacion_2 <- data.frame(datos_cluster,levels_cluster2)
+tabla_2 <- table(cluster_clasificacion_2)
+
+cluster_clasificacion_2_1 <- cluster_clasificacion_2[cluster_clasificacion_2$levels_cluster2 == 1,]
+cluster_clasificacion_2_2 <- cluster_clasificacion_2[cluster_clasificacion_2$levels_cluster2 == 2,]
+
+#----------------
+
+levels_cluster4 <- cluster_k4[["data"]][["cluster"]]
+cluster_clasificacion_4 <- data.frame(datos_cluster,levels_cluster4)
+tabla_4 <- table(cluster_clasificacion_4)
+
+cluster_clasificacion_4_1 <- cluster_clasificacion_4[cluster_clasificacion_4$levels_cluster4 == 1,]
+cluster_clasificacion_4_2 <- cluster_clasificacion_4[cluster_clasificacion_4$levels_cluster4 == 2,]
+cluster_clasificacion_4_3 <- cluster_clasificacion_4[cluster_clasificacion_4$levels_cluster4 == 3,]
+cluster_clasificacion_4_4 <- cluster_clasificacion_4[cluster_clasificacion_4$levels_cluster4 == 4,]
+#-------------
+
+levels_cluster6 <- cluster_k6[["data"]][["cluster"]]
+cluster_clasificacion_6 <- data.frame(datos_cluster,levels_cluster6)
+tabla_6 <- table(cluster_clasificacion_6)
+
+cluster_clasificacion_6_1 <- cluster_clasificacion_6[cluster_clasificacion_6$levels_cluster6 == 1,]
+cluster_clasificacion_6_2 <- cluster_clasificacion_6[cluster_clasificacion_6$levels_cluster6 == 2,]
+cluster_clasificacion_6_3 <- cluster_clasificacion_6[cluster_clasificacion_6$levels_cluster6 == 3,]
+cluster_clasificacion_6_4 <- cluster_clasificacion_6[cluster_clasificacion_6$levels_cluster6 == 4,]
+cluster_clasificacion_6_5 <- cluster_clasificacion_6[cluster_clasificacion_6$levels_cluster6 == 5,]
+cluster_clasificacion_6_6 <- cluster_clasificacion_6[cluster_clasificacion_6$levels_cluster6 == 6,]
+#TABLAS
+tabla_2
+tabla_4
+tabla_6
+
+#############
+#K=2
+
+#                        levels_cluster2
+#individuos                  1   2
+#compensated hypothyroid    22  87
+#negative                  870 994
+#primary hypothyroid        0  53
+#secondary hypothyroid      0   1
+
+
+
 

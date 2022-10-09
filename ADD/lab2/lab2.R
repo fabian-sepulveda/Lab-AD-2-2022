@@ -210,10 +210,6 @@ dendrograma1 + dendrograma2 + dendrograma3
 # y estraiga los datos del dendrograma
 
 dendrograma <- fviz_dend(arbol, k=4, cex = 0)
-print(dendrograma)
-
-
-kkk <- attr(dendrograma, "vector")
 
 dend_data <- attr(dendrograma, "dendrogram") #  Extraer datos de dendrogramas
 
@@ -225,12 +221,6 @@ sub_1 <- fviz_dend(dend_cuts$lower[[1]][[1]], main = "Subtree 1")
 sub_2 <- fviz_dend(dend_cuts$lower[[1]][[2]], main = "Subtree 2")
 sub_3 <- fviz_dend(dend_cuts$lower[[2]][[1]], main = "Subtree 3")
 sub_4 <- fviz_dend(dend_cuts$lower[[2]][[2]], main = "Subtree 4")
-
-
-sub_1
-sub_2
-sub_3
-sub_4
 
 #---------------------------No jerarquico--------------------
 #Método no jerarquico
@@ -278,9 +268,9 @@ cluster_k6 <- fviz_cluster(object = pam_clusters_6,
   theme_bw() +
   theme(legend.position = "bottom")
 
-print(cluster_k2)
-print(cluster_k4)
-print(cluster_k6)
+#print(cluster_k2)
+#print(cluster_k4)
+#print(cluster_k6)
 
 
 
@@ -290,6 +280,7 @@ print(cluster_k6)
 #Evaluar clasificacion de los cluster
 
 
+datos_cluster2 <- cluster_k2[["data"]][["name"]]
 
 individuos <- str_split(datos_cluster2, " _ ", simplify = TRUE)
 individuos <- individuos[,2]
@@ -306,47 +297,348 @@ datos_cluster <- cbind(datos_cluster,individuos_clases)
 
 levels_cluster2 <- cluster_k2[["data"]][["cluster"]]
 cluster_clasificacion_2 <- data.frame(datos_cluster,levels_cluster2)
-tabla_2 <- table(cluster_clasificacion_2)
+cluster_clasificacion_2_v <- data.frame(individuos,levels_cluster2)
+tabla_2 <- table(cluster_clasificacion_2_v)
 
 cluster_clasificacion_2_1 <- cluster_clasificacion_2[cluster_clasificacion_2$levels_cluster2 == 1,]
 cluster_clasificacion_2_2 <- cluster_clasificacion_2[cluster_clasificacion_2$levels_cluster2 == 2,]
 
-#----------------
+
+
+Conf2x1_EDAD = matrix(c(1:2), nrow=1, byrow=TRUE)
+layout(Conf2x1_EDAD)
+hist(cluster_clasificacion_2_1$age, xlab = "EDADES", main = "EDAD EN k=1")
+hist(cluster_clasificacion_2_2$age, xlab = "EDADES", main = "EDAD EN k=2")
+
+#GENERO
+tabla2_1 <- table(cluster_clasificacion_2_1$sex)
+tabla2_2 <- table(cluster_clasificacion_2_2$sex)
+Tablas_sex <- rbind(tabla2_1,tabla2_2)
+
+#TSH
+Conf1x2_TSH = matrix(c(1:2), nrow=1, byrow=TRUE)
+layout(Conf1x2_TSH)
+hist(cluster_clasificacion_2_1$TSH, xlab = "Niveles de TSH", main = "TSH en cluster K=1")
+hist(cluster_clasificacion_2_2$TSH, xlab = "Niveles de TSH", main = "TSH en cluster K=2")
+
+#T4
+Conf1x2_T4 = matrix(c(1:2), nrow=1, byrow=TRUE)
+layout(Conf1x2_T4)
+hist(cluster_clasificacion_2_1$T4U, xlab = "Niveles de T4", main = "T4 en cluster K=1")
+hist(cluster_clasificacion_2_2$T4U, xlab = "Niveles de T4", main = "T4 en cluster K=2")
+
+
+#T3
+Conf1x2_T4 = matrix(c(1:2), nrow=1, byrow=TRUE)
+layout(Conf1x2_T4)
+hist(cluster_clasificacion_2_1$T3, xlab = "Niveles de T3", main = "T3 en cluster K=1")
+hist(cluster_clasificacion_2_2$T3, xlab = "Niveles de T3", main = "T3 en cluster K=2")
+
+
+
+
+
+nombre_2k_cluster <- c("Cluster 1", "Cluster 2")
+datos_2k <- data.frame("on thyroxine" = c(sum(cluster_clasificacion_2_1$"on.thyroxine" == "t"),
+                                          sum(cluster_clasificacion_2_2$"on.thyroxine" == "t")),
+                       "on antithyroid medication" = c(sum(cluster_clasificacion_2_1$"on.antithyroid.medication" == "t"),
+                                                       sum(cluster_clasificacion_2_2$"on.antithyroid.medication" == "t")),
+                       "sick" = c(sum(cluster_clasificacion_2_1$"sick" == "t"),
+                                  sum(cluster_clasificacion_2_2$"sick"  == "t")),
+                       "pregnant" = c(sum(cluster_clasificacion_2_1$"pregnant"  == "t"),
+                                      sum(cluster_clasificacion_2_2$"pregnant"   == "t")),
+                       "thyroid surgery" = c(sum(cluster_clasificacion_2_1$"thyroid.surgery"  == "t"),
+                                             sum(cluster_clasificacion_2_2$"thyroid.surgery"   == "t")),
+                       "I131 treatment" = c(sum(cluster_clasificacion_2_1$"I131.treatment"  == "t"),
+                                            sum(cluster_clasificacion_2_2$"I131.treatment"   == "t")),
+                       "query hypothyroid" = c(sum(cluster_clasificacion_2_1$"query.hypothyroid"  == "t"),
+                                               sum(cluster_clasificacion_2_2$"query.hypothyroid"   == "t")),
+                       "lithium" = c(sum(cluster_clasificacion_2_1$"lithium"   == "t"),
+                                     sum(cluster_clasificacion_2_2$"lithium"    == "t")),
+                       "goitre" = c(sum(cluster_clasificacion_2_1$"goitre"   == "t"),
+                                    sum(cluster_clasificacion_2_2$"goitre"   == "t")),
+                       "tumor" = c(sum(cluster_clasificacion_2_1$"tumor"   == "t"),
+                                   sum(cluster_clasificacion_2_2$"tumor"  == "t")),
+                       "hypopituitary" = c(sum(cluster_clasificacion_2_1$"hypopituitary"   == "t"),
+                                           sum(cluster_clasificacion_2_2$"hypopituitary"  == "t")),
+                       "psych" = c(sum(cluster_clasificacion_2_1$psych == "t"),
+                                   sum(cluster_clasificacion_2_2$psych == "t")))
+
+
+
+# Transpone todas las columnas menos la primer
+datos_2k <- data.frame(t(datos_2k[-1]))
+# Añadimos los nombres de las columnas
+colnames(datos_2k) <- nombre_2k_cluster
+
+
+
+
+
+#--------------------------------------------------------------------------------------------
 
 levels_cluster4 <- cluster_k4[["data"]][["cluster"]]
 cluster_clasificacion_4 <- data.frame(datos_cluster,levels_cluster4)
-tabla_4 <- table(cluster_clasificacion_4)
+cluster_clasificacion_4_v <- data.frame(individuos,levels_cluster4)
+tabla_4 <- table(cluster_clasificacion_4_v)
 
+#---cluster 1
 cluster_clasificacion_4_1 <- cluster_clasificacion_4[cluster_clasificacion_4$levels_cluster4 == 1,]
 cluster_clasificacion_4_2 <- cluster_clasificacion_4[cluster_clasificacion_4$levels_cluster4 == 2,]
 cluster_clasificacion_4_3 <- cluster_clasificacion_4[cluster_clasificacion_4$levels_cluster4 == 3,]
 cluster_clasificacion_4_4 <- cluster_clasificacion_4[cluster_clasificacion_4$levels_cluster4 == 4,]
+
+
+Conf2x2_EDAD = matrix(c(1:4), nrow=2, byrow=TRUE)
+layout(Conf2x2_EDAD)
+hist(cluster_clasificacion_4_1$age, xlab = "EDADES", main = "EDAD EN k=1")
+hist(cluster_clasificacion_4_2$age, xlab = "EDADES", main = "EDAD EN k=2")
+hist(cluster_clasificacion_4_3$age, xlab = "EDADES", main = "EDAD EN k=3")
+hist(cluster_clasificacion_4_4$age, xlab = "EDADES", main = "EDAD EN k=4")
+
+#GENERO
+tabla4_1 <- table(cluster_clasificacion_4_1$sex)
+tabla4_2 <- table(cluster_clasificacion_4_2$sex)
+tabla4_3 <- table(cluster_clasificacion_4_3$sex)
+tabla4_4 <- table(cluster_clasificacion_4_4$sex)
+Tablas_sex <- rbind(tabla4_1,tabla4_2,tabla4_3,tabla4_4)
+
+#TSH
+Conf2x2_TSH = matrix(c(1:4), nrow=2, byrow=TRUE)
+layout(Conf2x2_TSH)
+hist(cluster_clasificacion_4_1$TSH, xlab = "Niveles de TSH", main = "TSH en cluster K=1")
+hist(cluster_clasificacion_4_2$TSH, xlab = "Niveles de TSH", main = "TSH en cluster K=2")
+hist(cluster_clasificacion_4_3$TSH, xlab = "Niveles de TSH", main = "TSH en cluster K=3")
+hist(cluster_clasificacion_4_4$TSH, xlab = "Niveles de TSH", main = "TSH en cluster K=4")
+
+#T4
+Conf2x2_T4 = matrix(c(1:4), nrow=2, byrow=TRUE)
+layout(Conf2x2_T4)
+hist(cluster_clasificacion_4_1$T4U, xlab = "Niveles de T4", main = "T4 en cluster K=1")
+hist(cluster_clasificacion_4_2$T4U, xlab = "Niveles de T4", main = "T4 en cluster K=2")
+hist(cluster_clasificacion_4_3$T4U, xlab = "Niveles de T4", main = "T4 en cluster K=3")
+hist(cluster_clasificacion_4_4$T4U, xlab = "Niveles de T4", main = "T4 en cluster K=4")
+
+
+#T3
+Conf2x2_T4 = matrix(c(1:4), nrow=2, byrow=TRUE)
+layout(Conf2x2_T4)
+hist(cluster_clasificacion_4_1$T3, xlab = "Niveles de T3", main = "T3 en cluster K=1")
+hist(cluster_clasificacion_4_2$T3, xlab = "Niveles de T3", main = "T3 en cluster K=2")
+hist(cluster_clasificacion_4_3$T3, xlab = "Niveles de T3", main = "T3 en cluster K=3")
+hist(cluster_clasificacion_4_4$T3, xlab = "Niveles de T3", main = "T3 en cluster K=4")
+
+
+nombre_4k_cluster <- c("Cluster 1", "Cluster 2", "Cluster 3", "Cluster 4")
+datos_4k <- data.frame("on thyroxine" = c(sum(cluster_clasificacion_4_1$"on.thyroxine" == "t"),
+                                       sum(cluster_clasificacion_4_2$"on.thyroxine" == "t"),
+                                       sum(cluster_clasificacion_4_3$"on.thyroxine" == "t"),
+                                       sum(cluster_clasificacion_4_4$"on.thyroxine" == "t")),
+                    "on antithyroid medication" = c(sum(cluster_clasificacion_4_1$"on.antithyroid.medication" == "t"),
+                                       sum(cluster_clasificacion_4_2$"on.antithyroid.medication" == "t"),
+                                       sum(cluster_clasificacion_4_3$"on.antithyroid.medication" == "t"),
+                                       sum(cluster_clasificacion_4_4$"on.antithyroid.medication" == "t")),
+                    "sick" = c(sum(cluster_clasificacion_4_1$"sick" == "t"),
+                                                    sum(cluster_clasificacion_4_2$"sick"  == "t"),
+                                                    sum(cluster_clasificacion_4_3$"sick"  == "t"),
+                                                    sum(cluster_clasificacion_4_4$"sick"  == "t")),
+                    "pregnant" = c(sum(cluster_clasificacion_4_1$"pregnant"  == "t"),
+                               sum(cluster_clasificacion_4_2$"pregnant"   == "t"),
+                               sum(cluster_clasificacion_4_3$"pregnant"   == "t"),
+                               sum(cluster_clasificacion_4_4$"pregnant"   == "t")),
+                    "thyroid surgery" = c(sum(cluster_clasificacion_4_1$"thyroid.surgery"  == "t"),
+                                   sum(cluster_clasificacion_4_2$"thyroid.surgery"   == "t"),
+                                   sum(cluster_clasificacion_4_3$"thyroid.surgery"   == "t"),
+                                   sum(cluster_clasificacion_4_4$"thyroid.surgery"   == "t")),
+                    "I131 treatment" = c(sum(cluster_clasificacion_4_1$"I131.treatment"  == "t"),
+                                          sum(cluster_clasificacion_4_2$"I131.treatment"   == "t"),
+                                          sum(cluster_clasificacion_4_3$"I131.treatment"   == "t"),
+                                          sum(cluster_clasificacion_4_4$"I131.treatment"   == "t")),
+                    "query hypothyroid" = c(sum(cluster_clasificacion_4_1$"query.hypothyroid"  == "t"),
+                                         sum(cluster_clasificacion_4_2$"query.hypothyroid"   == "t"),
+                                         sum(cluster_clasificacion_4_3$"query.hypothyroid"   == "t"),
+                                         sum(cluster_clasificacion_4_4$"query.hypothyroid"   == "t")),
+                    "lithium" = c(sum(cluster_clasificacion_4_1$"lithium"   == "t"),
+                                            sum(cluster_clasificacion_4_2$"lithium"    == "t"),
+                                            sum(cluster_clasificacion_4_3$"lithium"   == "t"),
+                                            sum(cluster_clasificacion_4_4$"lithium"    == "t")),
+                    "goitre" = c(sum(cluster_clasificacion_4_1$"goitre"   == "t"),
+                                  sum(cluster_clasificacion_4_2$"goitre"   == "t"),
+                                  sum(cluster_clasificacion_4_3$"goitre"   == "t"),
+                                  sum(cluster_clasificacion_4_4$"goitre"    == "t")),
+                    "tumor" = c(sum(cluster_clasificacion_4_1$"tumor"   == "t"),
+                                 sum(cluster_clasificacion_4_2$"tumor"  == "t"),
+                                 sum(cluster_clasificacion_4_3$"tumor"   == "t"),
+                                 sum(cluster_clasificacion_4_4$"tumor"    == "t")),
+                    "hypopituitary" = c(sum(cluster_clasificacion_4_1$"hypopituitary"   == "t"),
+                                sum(cluster_clasificacion_4_2$"hypopituitary"  == "t"),
+                                sum(cluster_clasificacion_4_3$"hypopituitary"   == "t"),
+                                sum(cluster_clasificacion_4_4$"hypopituitary"    == "t")),
+                    "psych" = c(sum(cluster_clasificacion_4_1$psych == "t"),
+                                sum(cluster_clasificacion_4_2$psych == "t"),
+                                sum(cluster_clasificacion_4_3$psych == "t"),
+                                sum(cluster_clasificacion_4_4$psych == "t")))
+
+
+
+# Transpone todas las columnas menos la primer
+datos_4k <- data.frame(t(datos_4k[-1]))
+# Añadimos los nombres de las columnas
+colnames(datos_4k) <- nombre_4k_cluster
+
+
+
 #-------------
 
 levels_cluster6 <- cluster_k6[["data"]][["cluster"]]
 cluster_clasificacion_6 <- data.frame(datos_cluster,levels_cluster6)
-tabla_6 <- table(cluster_clasificacion_6)
-
 cluster_clasificacion_6_1 <- cluster_clasificacion_6[cluster_clasificacion_6$levels_cluster6 == 1,]
 cluster_clasificacion_6_2 <- cluster_clasificacion_6[cluster_clasificacion_6$levels_cluster6 == 2,]
 cluster_clasificacion_6_3 <- cluster_clasificacion_6[cluster_clasificacion_6$levels_cluster6 == 3,]
 cluster_clasificacion_6_4 <- cluster_clasificacion_6[cluster_clasificacion_6$levels_cluster6 == 4,]
 cluster_clasificacion_6_5 <- cluster_clasificacion_6[cluster_clasificacion_6$levels_cluster6 == 5,]
 cluster_clasificacion_6_6 <- cluster_clasificacion_6[cluster_clasificacion_6$levels_cluster6 == 6,]
+
+#Analisis de genero
+
+
+
+#RESUMEN DE TODO
+
+#EDAD
+
+Conf3x2_EDAD = matrix(c(1:6), nrow=2, byrow=TRUE)
+layout(Conf3x2_EDAD)
+hist(cluster_clasificacion_6_1$age, xlab = "EDADES", main = "EDAD EN k=1")
+hist(cluster_clasificacion_6_2$age, xlab = "EDADES", main = "EDAD EN k=2")
+hist(cluster_clasificacion_6_3$age, xlab = "EDADES", main = "EDAD EN k=3")
+hist(cluster_clasificacion_6_4$age, xlab = "EDADES", main = "EDAD EN k=4")
+hist(cluster_clasificacion_6_5$age, xlab = "EDADES", main = "EDAD EN k=5")
+hist(cluster_clasificacion_6_6$age, xlab = "EDADES", main = "EDAD EN k=6")
+
+#GENERO
+tabla6_1 <- table(cluster_clasificacion_6_1$sex)
+tabla6_2 <- table(cluster_clasificacion_6_2$sex)
+tabla6_3 <- table(cluster_clasificacion_6_3$sex)
+tabla6_4 <- table(cluster_clasificacion_6_4$sex)
+tabla6_5 <- table(cluster_clasificacion_6_5$sex)
+tabla6_6 <- table(cluster_clasificacion_6_6$sex)
+Tablas_sex <- rbind(tabla6_1,tabla6_2,tabla6_3,tabla6_4,tabla6_5,tabla6_6)
+
+#TSH
+Conf3x2_TSH = matrix(c(1:6), nrow=2, byrow=TRUE)
+layout(Conf3x2_TSH)
+hist(cluster_clasificacion_6_1$TSH, xlab = "Niveles de TSH", main = "TSH en cluster K=1")
+hist(cluster_clasificacion_6_2$TSH, xlab = "Niveles de TSH", main = "TSH en cluster K=2")
+hist(cluster_clasificacion_6_3$TSH, xlab = "Niveles de TSH", main = "TSH en cluster K=3")
+hist(cluster_clasificacion_6_4$TSH, xlab = "Niveles de TSH", main = "TSH en cluster K=4")
+hist(cluster_clasificacion_6_5$TSH, xlab = "Niveles de TSH", main = "TSH en cluster K=5")
+hist(cluster_clasificacion_6_6$TSH, xlab = "Niveles de TSH", main = "TSH en cluster K=6")
+
+#T4
+Conf3x2_T4 = matrix(c(1:6), nrow=2, byrow=TRUE)
+layout(Conf3x2_T4)
+hist(cluster_clasificacion_6_1$T4U, xlab = "Niveles de T4", main = "T4 en cluster K=1")
+hist(cluster_clasificacion_6_2$T4U, xlab = "Niveles de T4", main = "T4 en cluster K=2")
+hist(cluster_clasificacion_6_3$T4U, xlab = "Niveles de T4", main = "T4 en cluster K=3")
+hist(cluster_clasificacion_6_4$T4U, xlab = "Niveles de T4", main = "T4 en cluster K=4")
+hist(cluster_clasificacion_6_5$T4U, xlab = "Niveles de T4", main = "T4 en cluster K=5")
+hist(cluster_clasificacion_6_6$T4U, xlab = "Niveles de T4", main = "T4 en cluster K=6")
+
+#T3
+Conf3x2_T4 = matrix(c(1:6), nrow=2, byrow=TRUE)
+layout(Conf3x2_T4)
+hist(cluster_clasificacion_6_1$T3, xlab = "Niveles de T3", main = "T3 en cluster K=1")
+hist(cluster_clasificacion_6_2$T3, xlab = "Niveles de T3", main = "T3 en cluster K=2")
+hist(cluster_clasificacion_6_3$T3, xlab = "Niveles de T3", main = "T3 en cluster K=3")
+hist(cluster_clasificacion_6_4$T3, xlab = "Niveles de T3", main = "T3 en cluster K=4")
+hist(cluster_clasificacion_6_5$T3, xlab = "Niveles de T3", main = "T3 en cluster K=5")
+hist(cluster_clasificacion_6_6$T3, xlab = "Niveles de T3", main = "T3 en cluster K=6")
+
+nombre_6k_cluster <- c("Cluster 1", "Cluster 2", "Cluster 3", "Cluster 4", "Cluster 5", "Cluster 6")
+datos_6k <- data.frame("on thyroxine" = c(sum(cluster_clasificacion_6_1$"on.thyroxine" == "t"),
+                                          sum(cluster_clasificacion_6_2$"on.thyroxine" == "t"),
+                                          sum(cluster_clasificacion_6_3$"on.thyroxine" == "t"),
+                                          sum(cluster_clasificacion_6_4$"on.thyroxine" == "t"),
+                                          sum(cluster_clasificacion_6_5$"on.thyroxine" == "t"),
+                                          sum(cluster_clasificacion_6_6$"on.thyroxine" == "t")),
+                       "on antithyroid medication" = c(sum(cluster_clasificacion_6_1$"on.antithyroid.medication" == "t"),
+                                                       sum(cluster_clasificacion_6_2$"on.antithyroid.medication" == "t"),
+                                                       sum(cluster_clasificacion_6_3$"on.antithyroid.medication" == "t"),
+                                                       sum(cluster_clasificacion_6_4$"on.antithyroid.medication" == "t"),
+                                                       sum(cluster_clasificacion_6_5$"on.antithyroid.medication" == "t"),
+                                                       sum(cluster_clasificacion_6_6$"on.antithyroid.medication" == "t")),
+                       "sick" = c(sum(cluster_clasificacion_6_1$"sick" == "t"),
+                                  sum(cluster_clasificacion_6_2$"sick"  == "t"),
+                                  sum(cluster_clasificacion_6_3$"sick"  == "t"),
+                                  sum(cluster_clasificacion_6_4$"sick"  == "t"),
+                                  sum(cluster_clasificacion_6_5$"sick"  == "t"),
+                                  sum(cluster_clasificacion_6_6$"sick"  == "t")),
+                       "pregnant" = c(sum(cluster_clasificacion_6_1$"pregnant"  == "t"),
+                                      sum(cluster_clasificacion_6_2$"pregnant"   == "t"),
+                                      sum(cluster_clasificacion_6_3$"pregnant"   == "t"),
+                                      sum(cluster_clasificacion_6_4$"pregnant"   == "t"),
+                                      sum(cluster_clasificacion_6_5$"pregnant"   == "t"),
+                                      sum(cluster_clasificacion_6_6$"pregnant"   == "t")),
+                       "thyroid surgery" = c(sum(cluster_clasificacion_6_1$"thyroid.surgery"  == "t"),
+                                             sum(cluster_clasificacion_6_2$"thyroid.surgery"   == "t"),
+                                             sum(cluster_clasificacion_6_3$"thyroid.surgery"   == "t"),
+                                             sum(cluster_clasificacion_6_4$"thyroid.surgery"   == "t"),
+                                             sum(cluster_clasificacion_6_5$"thyroid.surgery"   == "t"),
+                                             sum(cluster_clasificacion_6_6$"thyroid.surgery"   == "t")),
+                       "I131 treatment" = c(sum(cluster_clasificacion_6_1$"I131.treatment"  == "t"),
+                                            sum(cluster_clasificacion_6_2$"I131.treatment"   == "t"),
+                                            sum(cluster_clasificacion_6_3$"I131.treatment"   == "t"),
+                                            sum(cluster_clasificacion_6_4$"I131.treatment"   == "t"),
+                                            sum(cluster_clasificacion_6_5$"I131.treatment"   == "t"),
+                                            sum(cluster_clasificacion_6_6$"I131.treatment"   == "t")),
+                       "query hypothyroid" = c(sum(cluster_clasificacion_6_1$"query.hypothyroid"  == "t"),
+                                               sum(cluster_clasificacion_6_2$"query.hypothyroid"   == "t"),
+                                               sum(cluster_clasificacion_6_3$"query.hypothyroid"   == "t"),
+                                               sum(cluster_clasificacion_6_4$"query.hypothyroid"   == "t"),
+                                               sum(cluster_clasificacion_6_5$"query.hypothyroid"   == "t"),
+                                               sum(cluster_clasificacion_6_6$"query.hypothyroid"   == "t")),
+                       "lithium" = c(sum(cluster_clasificacion_6_1$"lithium"   == "t"),
+                                     sum(cluster_clasificacion_6_2$"lithium"    == "t"),
+                                     sum(cluster_clasificacion_6_3$"lithium"   == "t"),
+                                     sum(cluster_clasificacion_6_4$"lithium"    == "t"),
+                                     sum(cluster_clasificacion_6_5$"lithium"    == "t"),
+                                     sum(cluster_clasificacion_6_6$"lithium"    == "t")),
+                       "goitre" = c(sum(cluster_clasificacion_6_1$"goitre"   == "t"),
+                                    sum(cluster_clasificacion_6_2$"goitre"   == "t"),
+                                    sum(cluster_clasificacion_6_3$"goitre"   == "t"),
+                                    sum(cluster_clasificacion_6_4$"goitre"    == "t"),
+                                    sum(cluster_clasificacion_6_5$"goitre"    == "t"),
+                                    sum(cluster_clasificacion_6_6$"goitre"    == "t")),
+                       "tumor" = c(sum(cluster_clasificacion_6_1$"tumor"   == "t"),
+                                   sum(cluster_clasificacion_6_2$"tumor"  == "t"),
+                                   sum(cluster_clasificacion_6_3$"tumor"   == "t"),
+                                   sum(cluster_clasificacion_6_4$"tumor"    == "t"),
+                                   sum(cluster_clasificacion_6_5$"tumor"    == "t"),
+                                   sum(cluster_clasificacion_6_6$"tumor"    == "t")),
+                       "hypopituitary" = c(sum(cluster_clasificacion_6_1$"hypopituitary"   == "t"),
+                                           sum(cluster_clasificacion_6_2$"hypopituitary"  == "t"),
+                                           sum(cluster_clasificacion_6_3$"hypopituitary"   == "t"),
+                                           sum(cluster_clasificacion_6_4$"hypopituitary"    == "t"),
+                                           sum(cluster_clasificacion_6_5$"hypopituitary"    == "t"),
+                                           sum(cluster_clasificacion_6_6$"hypopituitary"    == "t")),
+                       "psych" = c(sum(cluster_clasificacion_6_1$psych == "t"),
+                                   sum(cluster_clasificacion_6_2$psych == "t"),
+                                   sum(cluster_clasificacion_6_3$psych == "t"),
+                                   sum(cluster_clasificacion_6_4$psych == "t"),
+                                   sum(cluster_clasificacion_6_5$psych == "t"),
+                                   sum(cluster_clasificacion_6_6$psych == "t")))
+
+
+
+# Transpone todas las columnas menos la primer
+datos_6k <- data.frame(t(datos_6k[-1]))
+# AÃ±adimos los nombres de las columnas
+colnames(datos_6k) <- nombre_6k_cluster
 #TABLAS
-tabla_2
-tabla_4
-tabla_6
-
-#############
-#K=2
-
-#                        levels_cluster2
-#individuos                  1   2
-#compensated hypothyroid    22  87
-#negative                  870 994
-#primary hypothyroid        0  53
-#secondary hypothyroid      0   1
+#tabla_2
+#tabla_4
+#tabla_6
 
 
 

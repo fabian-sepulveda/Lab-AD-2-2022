@@ -52,6 +52,11 @@ colnames(datos) <- c("age",
 clases <- str_split(datos[["class"]], "\\.\\|", simplify = TRUE)
 datos["class"] <- data.frame(clases[,1])
 
+datos$class[datos$class == "negative"] <- "N"
+datos$class[datos$class == "compensated hypothyroid"] <- "C"
+datos$class[datos$class == "secondary hypothyroid"] <- "S"
+datos$class[datos$class == "primary hypothyroid"] <- "P"
+
 edad <- datos$age
 edad_nuevo <- as.numeric(edad)
 
@@ -93,17 +98,20 @@ datos <- datos%>% select(-"T4U measured")
 datos <- datos%>% select(-"referral source")
 datos <- datos%>% select(-"query on thyroxine")
 datos <- datos%>% select(-"query hyperthyroid")
-datos <- datos%>% select(-"class")
 datos <- na.omit(datos)
 
+numeros <- rownames(datos)
+clases <- datos$class
+filas <- paste(numeros,"_",clases)
 
+datos <- datos%>% select(-"class")
 
 
 #----------------------------------------------------------------#
 #----------------------------------------------------------------#
 #TRANSFORMAR TODAS LAS VARIABLES A VALORES NUMERICOS
 
-#Normalizar los datos
+#Modificando variables dicotomicas
 
 datos_transformados <- datos
 
@@ -165,7 +173,7 @@ datos_transformados <- datos_transformados %>%
   
   
 
-
+rownames(datos_transformados) <- filas
 
 
 
@@ -177,78 +185,49 @@ gower_dist <- daisy(datos_transformados, metric = "gower", type = list(symm = c(
                                                                        logratio = c(1:6))) 
 
 
-
-#-----------Estamación jerárquica------------
+#-----------Estimación jerárquica------------
 
 #Método jerárquico
 
 arbol <- hclust(d = gower_dist,
                 method = "ward.D2")
+arbol2 <- hclust(d = gower_dist,
+                 method = "complete")
+arbol3 <- hclust(d = gower_dist,
+                 method = "average")
 
 
+#-------------- GRAFICANDO -------------------#
+
+###################################
+dendrograma1 <- fviz_dend(arbol,  main = "Método ''Ward.D2''", cex = 0)
+dendrograma2 <- fviz_dend(arbol2, main = "Método ''Complete''", cex = 0)
+dendrograma3 <- fviz_dend(arbol3, main = "Método ''Average''",cex = 0) 
+
+dendrograma1 + dendrograma2 + dendrograma3
+###################################
 # Cree un gráfico de todo el dendrograma
 # y estraiga los datos del dendrograma
-dendrograma <- fviz_dend(arbol)
-print(dendrograma)
 
+dendrograma <- fviz_dend(arbol, k=4)
+print(dendrograma)
 
 dend_data <- attr(dendrograma, "dendrogram") #  Extraer datos de dendrogramas
 
 # Cortar el dendrograma a la altura h = 10
 dend_cuts <- cut(dend_data, h = 5)
 
-
 #Visualizando los grupos
-fviz_dend(dend_cuts$lower[[1]][[1]][[1]][[1]], main = "Subtree 1")
-
-subtree_1 <- rbind(datos_transformados[1215,],
-                   datos_transformados[2014,],
-                   datos_transformados[1367,],
-                   datos_transformados[1198,],
-                   datos_transformados[77,],
-                   datos_transformados[684,],
-                   datos_transformados[724,],
-                   datos_transformados[148,],
-                   datos_transformados[1924,],
-                   datos_transformados[144,],
-                   datos_transformados[1090,],
-                   datos_transformados[404,],
-                   datos_transformados[1097,],
-                   datos_transformados[1665,],
-                   datos_transformados[546,],
-                   datos_transformados[621,],
-                   datos_transformados[207,],
-                   datos_transformados[1772,],
-                   datos_transformados[761,],
-                   datos_transformados[644,],
-                   datos_transformados[801,],
-                   datos_transformados[1439,],
-                   datos_transformados[885,],
-                   datos_transformados[1729,],
-                   datos_transformados[798,],
-                   datos_transformados[2000,],
-                   datos_transformados[573,],
-                   datos_transformados[425,],
-                   datos_transformados[1639,]
-                   )
+sub_1 <- fviz_dend(dend_cuts$lower[[1]][[1]], main = "Subtree 1")
+sub_2 <- fviz_dend(dend_cuts$lower[[1]][[2]], main = "Subtree 2")
+sub_3 <- fviz_dend(dend_cuts$lower[[2]][[1]], main = "Subtree 3")
+sub_4 <- fviz_dend(dend_cuts$lower[[2]][[2]], main = "Subtree 4")
 
 
-
-fviz_dend(dend_cuts$lower[[1]][[1]][[2]][[2]], main = "Subtree 2")
-subtree_2 <- rbind(datos_transformados[865,],
-                   datos_transformados[1624,],
-                   datos_transformados[1255,],
-                   datos_transformados[518,],
-                   datos_transformados[880,],
-                   datos_transformados[895,],
-                   datos_transformados[364,],
-                   datos_transformados[1069,])
-
-
-
-#fviz_dend(dend_cuts$lower[[2]][[2]][[1]][[2]], main = "Subtree 3")
-
-
+sub_1
+sub_2
+sub_3
+sub_4
 
 #---------------------------No jerarquico--------------------
 #Método no jerarquico

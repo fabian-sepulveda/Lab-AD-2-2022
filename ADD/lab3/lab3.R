@@ -193,6 +193,15 @@ datos_dis$T3 = cut(datos_dis$T3, breaks = c(0,0.8,2,15),
 datos_dis$TT4 = cut(datos_dis$TT4, breaks = c(0,4,11,450),
                    labels = c("bajo","normal","alto"))
 
+#_______________________________________________________________________________
+# IDEA 
+# VER LOS SOPORTES MÁS INTERESANTES DE CADA VARIABLE
+# VER LAS REGLAS MAS INTERESANTES, TOMAR 5 DE CADA CLASE Y OTRAS 5 DE ALGO INTERESANTE
+# OTRAS INTERESANTES PUEDEN SER QUE AFECTA AL SEXO O LA EDAD
+# FINALMENTE SE PUEDE HACER EL ANALISIS DE LA REGLA OBTENIDA, REALIZANDO EL CONTRASTE CON LA REALIDAD
+# EN BASE A LOS NIVELES DE HORMONAS, BUSCAR ALGUN PAPER QUE DIGA ALGO SOBRE LA AFECCION A MUJERES EMBARAZADAS
+# ETC ETC... ES UNA IDEA PERO LO DEJO AQUI PARA NO PERDERLO
+#_______________________________________________________________________________
 
 
 rules = apriori(

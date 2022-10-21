@@ -116,72 +116,25 @@ datos <- na.omit(datos)
 
 #Modificando variables dicotomicas
 
-datos_transformados <- datos
+datos_trans <- datos
 
-datos_transformados <- datos_transformados %>% 
-  mutate(
-  sex = paste("sex", sex, sep = "_"),
-  valor_sex = 1,
-  
-  "on thyroxine" = paste("on thyroxine",`on thyroxine`, sep = "_" ),
-  valor_thyroxine = 1,
-  
-  "query hypothyroid" = paste("query hypothyroid",`query hypothyroid`, sep = "_" ),
-  valor_query_hypo = 1,
-  
-  "on antithyroid medication" = paste("on antithyroid medication", `on antithyroid medication`, sep = "_"),
-  valor_anti_thy = 1,
-  
-  "sick" = paste("sick", sick, sep = "_"),
-  valor_sick = 1,
-  
-  "pregnant" = paste("pregnant", `pregnant`, sep = "_"),
-  valor_pregnat = 1,
-  
-  "thyroid surgery" = paste("thyroid surgery", `thyroid surgery`, sep = "_"),
-  valor_surgery = 1,
-  
-  "I131 treatment" = paste("I131 treatment", `I131 treatment`, sep = "_"),
-  valor_I131 = 1,
-  
-  "lithium" = paste("lithium", `lithium`, sep = "_"),
-  valor_lit = 1,
-  
-  "goitre" = paste("goitre", `goitre`, sep = "_"),
-  valor_goit = 1,
-  
-  "tumor" = paste("tumor", `tumor`, sep = "_"),
-  valor_tumor = 1,
-  
-  "hypopituitary" = paste("hypopituitary", `hypopituitary`, sep = "_"),
-  valor_hypopi = 1,
-  
-  "psych" = paste("psych", `psych`, sep = "_"),
-  valor_psych = 1
-  
-  ) %>% 
-    spread(key = sex, value = valor_sex,fill = 0) %>%
-    spread(key = `query hypothyroid`, value = valor_query_hypo,fill = 0) %>%
-    spread(key = `on thyroxine`, value = valor_thyroxine,fill = 0) %>%
-    spread(key = `on antithyroid medication`, value = valor_anti_thy, fill = 0) %>%
-    spread(key = sick, value = valor_sick,fill = 0) %>%
-    spread(key = pregnant, value = valor_pregnat,fill = 0) %>%
-    spread(key = `thyroid surgery`, value = valor_surgery,fill = 0) %>%
-    spread(key = `I131 treatment`, value = valor_I131,fill = 0) %>%
-    spread(key = lithium, value = valor_lit,fill = 0) %>%
-    spread(key = goitre, value = valor_goit,fill = 0) %>%
-    spread(key = tumor, value = valor_tumor,fill = 0) %>%
-    spread(key = hypopituitary, value = valor_hypopi,fill = 0) %>%
-    spread(key = psych, value = valor_psych,fill = 0) 
-  
-  
-
-rownames(datos_transformados) <- filas
+datos_trans$`on thyroxine` <- ifelse(datos_trans$`on thyroxine` == "f", 0, 1)
+datos_trans$`query hypothyroid` <- ifelse(datos_trans$`query hypothyroid` == "f", 0, 1)
+datos_trans$`on antithyroid medication` <- ifelse(datos_trans$`on antithyroid medication` == "f", 0, 1)
+datos_trans$sick <- ifelse(datos_trans$sick == "f", 0, 1)
+datos_trans$pregnant <- ifelse(datos_trans$pregnant == "f", 0, 1)
+datos_trans$`thyroid surgery` <- ifelse(datos_trans$`thyroid surgery` == "f", 0, 1)
+datos_trans$`I131 treatment` <- ifelse(datos_trans$`I131 treatment` == "f", 0, 1)
+datos_trans$lithium <- ifelse(datos_trans$lithium == "f", 0, 1)
+datos_trans$goitre <- ifelse(datos_trans$goitre == "f", 0, 1)
+datos_trans$tumor <- ifelse(datos_trans$tumor == "f", 0, 1)
+datos_trans$hypopituitary <- ifelse(datos_trans$hypopituitary == "f", 0, 1)
+datos_trans$psych <- ifelse(datos_trans$psych == "f", 0, 1)
 
 
 #discretizamos los niveles de hormonas y edades
 
-datos_dis = datos_transformados
+datos_dis = datos_trans
 
 datos_dis$age = cut(datos_dis$age, breaks = c(1,18,60,500),
                     labels = c("NIÑO/JOVEN","ADULTO","ADULTO MAYOR"))

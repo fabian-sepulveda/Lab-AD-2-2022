@@ -14,7 +14,7 @@ library(arulesViz)
 
 set.seed(123)
 
-datos <- read.csv2("C:/Users/osswa/OneDrive/Escritorio/02-2022/Análisis de datos/Laboratorio/allhypo.data", 
+datos <- read.csv2("C:/Users/fabia/Desktop/Lab-AD-2-2022/ADD/lab1/allhypo.data", 
                    sep = ",",
                    header = FALSE)
 colnames(datos) <- c("age",
@@ -102,10 +102,7 @@ datos <- datos%>% select(-"query hyperthyroid")
 datos <- datos%>% select(-"query hypothyroid")
 #PARA PRUEBAS 
 datos <- datos%>% select(-"T4U")
-<<<<<<< HEAD
-datos <- datos%>% select(-"TT4")
-=======
->>>>>>> main
+
 datos <- na.omit(datos)
 datos$FTI <- datos$FTI/100
 
@@ -146,11 +143,8 @@ datos_dis$TSH = cut(datos_dis$TSH, breaks = c(0,0.2,3,500),
                     labels = c("bajo","normal","alto"))
 datos_dis$T3 = cut(datos_dis$T3, breaks = c(0,0.67,1.95,15),
                    labels = c("bajo","normal","alto"))
-<<<<<<< HEAD
-datos_dis$FTI = cut(datos_dis$FTI, breaks = c(0,0.8,2,450),
-=======
+
 datos_dis$TT4 = cut(datos_dis$TT4, breaks = c(0,4.4,11.6,450),
->>>>>>> main
                    labels = c("bajo","normal","alto"))
 
 datos_dis$FTI = cut(datos_dis$FTI, breaks = c(0,0.8,2.24,450),
@@ -248,33 +242,10 @@ rules2 = apriori(
 
 rules_negative = apriori(
   data = datos_dis, 
-  parameter=list(support = 0.3, confidence = 0.7, minlen = 3, maxlen = 6, target="rules"),
-  appearance=list(rhs = "class=negative")
-)
-
-<<<<<<< HEAD
-
-rules_primary_2 = apriori(
-  data = datos_dis,
-  parameter=list(support = 0.3, minlen = 4, maxlen = 6, target="rules"),
+  parameter=list(support = 0.0044, confidence = 0.7, minlen = 3, maxlen = 6, target="rules"),
   appearance=list(rhs = "class=primary hypothyroid")
 )
 
-inspect(sort(x = rules_primary_2, decreasing = FALSE, by = "confidence")[1:20])
-
-inspect(sort(x = rules, decreasing = FALSE, by = "confidence")[1:20])
-
-inspect(sort(x = rules_negative, decreasing = FALSE, by = "confidence")[1:20])
-
-inspect(sort(x = rules_secondary, decreasing = FALSE, by = "confidence"))
-
-inspect(sort(x = rules_primary, decreasing = FALSE, by = "confidence")[1:20])
-
-inspect(sort(x = rules_compensated, decreasing = FALSE, by = "confidence")[1:20])
-
-=======
->>>>>>> main
-
-inspect(sort(x = rules2, decreasing = FALSE, by = "support")[1:50])
+inspect(sort(x = rules_negative, decreasing = TRUE, by = "support")[1:20])
 
 

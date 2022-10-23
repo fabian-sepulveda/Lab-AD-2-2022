@@ -104,7 +104,7 @@ datos <- datos%>% select(-"query hypothyroid")
 datos <- datos%>% select(-"T4U")
 
 datos <- na.omit(datos)
-datos$FTI <- datos$FTI/100
+datos$FTI <- datos$FTI*100
 
 # numeros <- rownames(datos)
 # clases <- datos$class
@@ -147,7 +147,7 @@ datos_dis$T3 = cut(datos_dis$T3, breaks = c(0,0.67,1.95,15),
 datos_dis$TT4 = cut(datos_dis$TT4, breaks = c(0,4.4,11.6,450),
                    labels = c("bajo","normal","alto"))
 
-datos_dis$FTI = cut(datos_dis$FTI, breaks = c(0,0.8,2.24,450),
+datos_dis$FTI = cut(datos_dis$FTI, breaks = c(0,12,30,450), #rango en pmol
                     labels = c("bajo","normal","alto"))
 
 #_______________________________________________________________________________

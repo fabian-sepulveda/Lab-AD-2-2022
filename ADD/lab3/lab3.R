@@ -14,7 +14,7 @@ library(arulesViz)
 
 set.seed(123)
 
-datos <- read.csv2("C:/Users/fabia/Desktop/Lab-AD-2-2022/ADD/lab1/allhypo.data", 
+datos <- read.csv2("C:/Users/osswa/OneDrive/Escritorio/02-2022/Análisis de datos/Laboratorio/allhypo.data", 
                    sep = ",",
                    header = FALSE)
 colnames(datos) <- c("age",
@@ -104,7 +104,6 @@ datos <- datos%>% select(-"query hypothyroid")
 datos <- datos%>% select(-"T4U")
 
 datos <- na.omit(datos)
-datos$FTI <- datos$FTI*100
 
 # numeros <- rownames(datos)
 # clases <- datos$class
@@ -119,17 +118,17 @@ datos$FTI <- datos$FTI*100
 
 datos_trans <- datos
 
-datos_trans$`on thyroxine` <- ifelse(datos_trans$`on thyroxine` == "f", 0, 1)
-datos_trans$`on antithyroid medication` <- ifelse(datos_trans$`on antithyroid medication` == "f", 0, 1)
-datos_trans$sick <- ifelse(datos_trans$sick == "f", 0, 1)
-datos_trans$pregnant <- ifelse(datos_trans$pregnant == "f", 0, 1)
-datos_trans$`thyroid surgery` <- ifelse(datos_trans$`thyroid surgery` == "f", 0, 1)
-datos_trans$`I131 treatment` <- ifelse(datos_trans$`I131 treatment` == "f", 0, 1)
-datos_trans$lithium <- ifelse(datos_trans$lithium == "f", 0, 1)
-datos_trans$goitre <- ifelse(datos_trans$goitre == "f", 0, 1)
-datos_trans$tumor <- ifelse(datos_trans$tumor == "f", 0, 1)
-datos_trans$hypopituitary <- ifelse(datos_trans$hypopituitary == "f", 0, 1)
-datos_trans$psych <- ifelse(datos_trans$psych == "f", 0, 1)
+datos_trans$`on thyroxine` <- factor(ifelse(datos_trans$`on thyroxine` == "f",  FALSE,TRUE))
+datos_trans$`on antithyroid medication` <- factor(ifelse(datos_trans$`on antithyroid medication` == "f", FALSE,TRUE))
+datos_trans$sick <- factor(ifelse(datos_trans$sick == "f",FALSE,TRUE))
+datos_trans$pregnant <- factor(ifelse(datos_trans$pregnant == "f", FALSE,TRUE))
+datos_trans$`thyroid surgery` <- factor(ifelse(datos_trans$`thyroid surgery` == "f",FALSE,TRUE))
+datos_trans$`I131 treatment` <- factor(ifelse(datos_trans$`I131 treatment` == "f", FALSE,TRUE))
+datos_trans$lithium <- factor(ifelse(datos_trans$lithium == "f", FALSE,TRUE))
+datos_trans$goitre <- factor(ifelse(datos_trans$goitre == "f", FALSE,TRUE))
+datos_trans$tumor <- factor(ifelse(datos_trans$tumor == "f", FALSE,TRUE))
+datos_trans$hypopituitary <- factor(ifelse(datos_trans$hypopituitary == "f", FALSE,TRUE))
+datos_trans$psych <- factor(ifelse(datos_trans$psych == "f", FALSE,TRUE))
 
 
 #discretizamos los niveles de hormonas y edades
@@ -144,7 +143,7 @@ datos_dis$TSH = cut(datos_dis$TSH, breaks = c(0,0.2,3,500),
 datos_dis$T3 = cut(datos_dis$T3, breaks = c(0,0.67,1.95,15),
                    labels = c("bajo","normal","alto"))
 
-datos_dis$TT4 = cut(datos_dis$TT4, breaks = c(0,4.4,11.6,450),
+datos_dis$TT4 = cut(datos_dis$TT4, breaks = c(0,60,150,450), #rango en nmol
                    labels = c("bajo","normal","alto"))
 
 datos_dis$FTI = cut(datos_dis$FTI, breaks = c(0,12,30,450), #rango en pmol
@@ -229,23 +228,36 @@ rownames(table_soporte_Hormona) <- "Niveles"
 print(table_soporte_Hormona)
 
 #Calculo de reglas
-rules = apriori(
+
+rules_negativo = apriori(
   data = datos_dis, 
-  parameter=list(target="rules")
+  parameter=list(support = 0.3, confidence = 0.7, minlen = 3, maxlen = 6, target="rules"),
+  appearance=list(rhs = "class=negative")
 )
 
-rules2 = apriori(
+rules_compensado = apriori(
   data = datos_dis, 
-  parameter=list(support = 0.3, confidence = 0.7, minlen = 3, maxlen = 6, target="rules")
+  parameter=list(support = 0.001, confidence = 0.7,target="rules"),
+  appearance=list(rhs = "class=compensated hypothyroid")
 )
 
-
-rules_negative = apriori(
+rules_primario = apriori(
   data = datos_dis, 
-  parameter=list(support = 0.0044, confidence = 0.7, minlen = 3, maxlen = 6, target="rules"),
+  parameter=list(support = 0.003, confidence = 0.7, minlen = 3, maxlen = 6, target="rules"),
   appearance=list(rhs = "class=primary hypothyroid")
 )
 
-inspect(sort(x = rules_negative, decreasing = TRUE, by = "support")[1:20])
+
+
+#--------------------------------
+inspect(sort(x = rules_negativo, decreasing = TRUE, by = "lift")[1:50])
+inspect(sort(x = rules_negativo, decreasing = TRUE, by = "support")[1:50])
+
+inspect(sort(x = rules_compensado, decreasing = FALSE, by = "lift")[1:20])
+inspect(sort(x = rules_compensado, decreasing = FALSE, by = "support")[1:20])
+
+inspect(sort(x = rules_primario, decreasing = TRUE, by = "support")[1:100])
+inspect(sort(x = rules_primario, decreasing = TRUE, by = "lift")[1:100])
+inspect(sort(x = rules_primario, decreasing = TRUE, by = "confidence")[1:100])
 
 

@@ -10,7 +10,7 @@ library(tidyverse)
 
 #--- LEYENDO Y DEJANDO LISTOS LOS DATOS ---#
 
-set.seed(123)
+
 
 datos <- read.csv2("C:/Users/fabia/Desktop/Lab-AD-2-2022/ADD/lab1/allhypo.data", 
                    sep = ",",
@@ -51,10 +51,9 @@ colnames(datos) <- c("age",
 clases <- str_split(datos[["class"]], "\\.\\|", simplify = TRUE)
 datos["class"] <- data.frame(clases[,1])
 
-# datos$class[datos$class == "negative"] <- "N"
-# datos$class[datos$class == "compensated hypothyroid"] <- "C"
-# datos$class[datos$class == "secondary hypothyroid"] <- "S"
-# datos$class[datos$class == "primary hypothyroid"] <- "P"
+datos$class[datos$class == "negative"] <- "N"
+datos$class[datos$class == "compensated hypothyroid"] <- "C"
+datos$class[datos$class == "primary hypothyroid"] <- "P"
 
 edad <- datos$age
 edad_nuevo <- as.numeric(edad)
@@ -156,8 +155,11 @@ datos_dis$FTI = cut(datos_dis$FTI, breaks = c(0,12,30,450), #rango en pmol
 # EN BASE A LOS NIVELES DE HORMONAS, BUSCAR ALGUN PAPER QUE DIGA ALGO SOBRE LA AFECCION A MUJERES EMBARAZADAS
 # ETC ETC... ES UNA IDEA PERO LO DEJO AQUI PARA NO PERDERLO
 #_______________________________________________________________________________
-
+set.seed(1)
 datos_dis <- datos_dis[datos_dis$class != "secondary hypothyroid", ]
+
+
+
 colnames(datos_dis)[3] <- "onTH"
 colnames(datos_dis)[4] <- "antiMED"
 colnames(datos_dis)[7] <- "thyrSur"
@@ -166,15 +168,20 @@ data_index = createDataPartition(datos_dis$class, p=0.7)$Resample1
 data_training = datos_dis[data_index, ]
 data_test = datos_dis[-data_index, ]
 
+
 data_training$class <- as.factor(data_training$class)
 str(data_training)
 
 data_test$class <- as.factor(data_test$class)
 str(data_training)
 
-arbol <- C5.0(data_training[-18], data_training$class) 
-summary(arbol)
+arbol = C5.0(class ~ ., data_training)
+arbol_reglas = C5.0(x = data_training[,-18], y = data_training$class, rules = T)
+arbol_pred_class = predict(arbol, data_test[,-18], type = "class")
+arbol_pred_prob = predict(arbol, data_test[,-18], type = "prob")
 
-data_predicted <- predict(arbol, data_test)
-confusionMatrix(data = data_predicted, reference = data_test$class, positive = "yes")
+
 plot(arbol)
+summary(arbol)
+summary(arbol_reglas)
+

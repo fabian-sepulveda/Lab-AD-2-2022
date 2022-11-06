@@ -158,8 +158,6 @@ datos_dis$FTI = cut(datos_dis$FTI, breaks = c(0,12,30,450), #rango en pmol
 set.seed(1)
 datos_dis <- datos_dis[datos_dis$class != "secondary hypothyroid", ]
 
-
-
 colnames(datos_dis)[3] <- "onTH"
 colnames(datos_dis)[4] <- "antiMED"
 colnames(datos_dis)[7] <- "thyrSur"
@@ -182,6 +180,7 @@ arbol_pred_prob = predict(arbol, data_test[,-18], type = "prob")
 
 
 plot(arbol)
+
 summary(arbol)
 summary(arbol_reglas)
 

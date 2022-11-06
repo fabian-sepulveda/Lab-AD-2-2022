@@ -12,7 +12,8 @@ library(tidyverse)
 
 
 
-datos <- read.csv2("C:/Users/fabia/Desktop/Lab-AD-2-2022/ADD/lab1/allhypo.data", 
+#datos <- read.csv2("C:/Users/fabia/Desktop/Lab-AD-2-2022/ADD/lab1/allhypo.data", 
+datos <- read.csv2("C:/Users/osswa/OneDrive/Escritorio/02-2022/Análisis de datos/Laboratorio/allhypo.data", 
                    sep = ",",
                    header = FALSE)
 colnames(datos) <- c("age",

@@ -181,7 +181,12 @@ arbol_pred_prob = predict(arbol, data_test[,-18], type = "prob")
 
 
 plot(arbol)
-
+summary(arbol_pred_class)
 summary(arbol)
 summary(arbol_reglas)
+
+
+conf.matrix.tree = confusionMatrix(table(data_test$class, arbol_pred_class))
+print(conf.matrix.tree)
+
 

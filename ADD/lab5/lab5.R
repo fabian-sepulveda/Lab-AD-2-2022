@@ -1,3 +1,4 @@
+#------------------------------------------#
 library(MTS)
 library(signal)
 library(TSA)
@@ -5,6 +6,9 @@ library(oce)
 library(ggplot2)
 library(descomponer)
 #------------------------------------------#
+
+
+
 
 #--- LEYENDO Y DEJANDO LISTOS LOS DATOS ---#
 #datosNormo <- read.csv2("C:/Users/fabia/Desktop/Lab-AD-2-2022/ADD/lab5/TJ000.txt", 
@@ -16,6 +20,17 @@ datosNormo <- read.csv2("C:/Users/osswa/OneDrive/Escritorio/02-2022/Análisis de
 datosHiper <- read.csv2("C:/Users/osswa/OneDrive/Escritorio/02-2022/Análisis de datos/Laboratorio/Lab-AD-2-2022/ADD/lab5/TJ001.txt", 
                         sep = "\t",
                         header = FALSE)
+
+
+
+
+
+
+#########################################################################################
+#########################################################################################
+#########################################################################################
+
+
 
 
 
@@ -37,23 +52,70 @@ plot.ts(VFSCNormoT)
 #LOS GRAFICOS PARA PAM normocapnia
 #periodograma
 periodPAM_NormoT <- pwelch(PamNormoT, nfft=256, fs = 5)
-#Validación cruzada 
-rxy_Normo <- ccf(PamNormoT,VFSCNormoT,lag.max = 200,pl=TRUE)
-wRxy_normo <- pwelch(rxy_Normo$acf, nfft = 256, fs = 5, plot = TRUE)
-
-#auto correlacion
-rxy_NormoAUTO <- acf(PamNormoT, lag.max = length(PamNormoT))
 
 
+#---Validación cruzada--- 
 
+rxy_Normo <- ccf(PamNormoT,VFSCNormoT,pl=TRUE)
+
+rxy_Normo_max <- ccf(PamNormoT,VFSCNormoT,lag.max = 200,pl=TRUE)
+
+
+#Periodograma suavizado
+wRxy_Normo <- pwelch(rxy_Normo$acf, nfft = 256, fs = 5, plot = TRUE)
+
+
+
+
+#---Autocorrelacion---
+rxy_Normo <- acf(PamNormoT, lag.max = length(PamNormoT))
+
+
+
+
+#------------
+Rx_Normo <- acf(PamNormoT, lag.max = length(PamNormoT))
+wx_Normo <- pwelch(Rx_Normo$acf, nfft = 256, fs = 5, plot = TRUE)
+
+
+#Función de transferencia
+
+tfm_Normo <- wRxy_Normo$spec/wx_Normo$spec
+plot(tfm_Normo, type="b")
+
+
+
+#-----------------------------#
+
+t=35;
+fin = t/0.2;
+drop=76;
+step=rep(1,fin);
+step[drop:fin]=rep(0,fin-drop+1);
+fw=butter(2,0.3);
+step_f=filter(fw$b,fw$a,step);
+
+tfm_t <- ifft(tfm_Normo)
+
+Yx = conv(step_f,tfm_t)
+
+plot(abs(Yx))
 
 
 
 
 #########################################################################################
+#########################################################################################
+#########################################################################################
+#########################################################################################
 
 
-#HIPER
+
+
+
+
+########### HIPER ###########
+
 PAM_Hiper <- datosHiper[,1]
 VFSC_Hiper <- datosHiper[,3]
 datos_Hiper <- matrix(c(PAM_Hiper,VFSC_Hiper),ncol = 2)
@@ -68,16 +130,47 @@ plot.ts(VFSCHiperT)
 
 
 
-#periodograma
+#Periodograma
 periodPAM_HiperT <- pwelch(PamHiperT, nfft=256, fs = 5)
-#Validación cruzada 
+
+
+#---Validación cruzada--- 
 rxy_Hiper <- ccf(PamHiperT,VFSCHiperT,lag.max = 200,pl=TRUE)
+#Periodograma
 wRxy_Hiper <- pwelch(rxy_Hiper$acf, nfft = 256, fs = 5, plot = TRUE)
 
-#auto correlacion
-rxy_HiperAUTO <- acf(PamHiperT, lag.max = length(PamHiperT))
+
+#Autocorrelacion
+rxy_Hiper <- acf(PamHiperT, lag.max = length(PamHiperT))
 
 
+#------------------------------------------------------------------
+Rx_Hiper <- acf(PamHiperT, lag.max = length(PamHiperT))
+wx_Hiper <- pwelch(Rx_Hiper$acf, nfft = 256, fs = 5, plot = TRUE)
+
+
+#Función de transferencia
+
+tfm_Hiper <- wRxy_Hiper$spec/wx_Hiper$spec
+plot(tfm_Hiper, type="b")
+
+
+
+#-----------------------------#
+
+t=35;
+fin = t/0.2;
+drop=76;
+step=rep(1,fin);
+step[drop:fin]=rep(0,fin-drop+1);
+fw=butter(2,0.3);
+step_f=filter(fw$b,fw$a,step);
+
+tfm_t <- ifft(tfm_Hiper)
+
+Yx = conv(step_f,tfm_t)
+
+plot(abs(Yx))
 
 
 

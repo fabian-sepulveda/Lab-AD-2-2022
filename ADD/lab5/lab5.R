@@ -11,13 +11,13 @@ library(descomponer)
 
 
 #--- LEYENDO Y DEJANDO LISTOS LOS DATOS ---#
-#datosNormo <- read.csv2("C:/Users/fabia/Desktop/Lab-AD-2-2022/ADD/lab5/TJ000.txt", 
-datosNormo <- read.csv2("C:/Users/osswa/OneDrive/Escritorio/02-2022/Análisis de datos/Laboratorio/Lab-AD-2-2022/ADD/lab5/TJ000.txt", 
+datosNormo <- read.csv2("C:/Users/fabia/Desktop/Lab-AD-2-2022/ADD/lab5/TJ000.txt", 
+#datosNormo <- read.csv2("C:/Users/osswa/OneDrive/Escritorio/02-2022/Análisis de datos/Laboratorio/Lab-AD-2-2022/ADD/lab5/TJ000.txt", 
                    sep = "\t",
                    header = FALSE)
 
-#datosHiper <- read.csv2("C:/Users/fabia/Desktop/Lab-AD-2-2022/ADD/lab5/TJ001.txt", 
-datosHiper <- read.csv2("C:/Users/osswa/OneDrive/Escritorio/02-2022/Análisis de datos/Laboratorio/Lab-AD-2-2022/ADD/lab5/TJ001.txt", 
+datosHiper <- read.csv2("C:/Users/fabia/Desktop/Lab-AD-2-2022/ADD/lab5/TJ001.txt", 
+#datosHiper <- read.csv2("C:/Users/osswa/OneDrive/Escritorio/02-2022/Análisis de datos/Laboratorio/Lab-AD-2-2022/ADD/lab5/TJ001.txt", 
                         sep = "\t",
                         header = FALSE)
 
@@ -44,8 +44,10 @@ datos_Normo <- matrix(c(PAM_Normo,VFSC_Normo),ncol = 2)
 PamNormoT <- as.numeric(ts(data = PAM_Normo, frequency = 5, deltat = 0.2))
 VFSCNormoT <- as.numeric(ts(data = VFSC_Normo, frequency = 5, deltat = 0.2))
 
-plot.ts(PamNormoT)
-plot.ts(VFSCNormoT)
+plot.ts(PamNormoT, main="PAM paciente normocapnia",
+        xlab = "Tiempo", ylab = "PAM")
+plot.ts(VFSCNormoT, main= "VFSC paciente normocapnia",
+        xlab = "Tiempo", ylab = "VFSC")
 
 
 
@@ -57,8 +59,11 @@ periodPAM_NormoT <- pwelch(PamNormoT, nfft=256, fs = 5)
 #---Validación cruzada--- 
 
 rxy_Normo <- ccf(PamNormoT,VFSCNormoT,pl=TRUE)
-
-rxy_Normo_max <- ccf(PamNormoT,VFSCNormoT,lag.max = 200,pl=TRUE)
+plot(rxy_Normo, main = "Correlacion Cruzada PAM y VFSC, normocapnia",
+     xlab = "Lag (Default)")
+rxy_Normo_max <- ccf(PamNormoT,VFSCNormoT,lag.max = 750,pl=TRUE)
+plot(rxy_Normo_max, main = "Correlacion Cruzada PAM y VFSC, normocapnia",
+     xlab = "Lag (max = 750)")
 
 
 #Periodograma suavizado
@@ -68,10 +73,8 @@ wRxy_Normo <- pwelch(rxy_Normo$acf, nfft = 256, fs = 5, plot = TRUE)
 
 
 #---Autocorrelacion---
-rxy_Normo <- acf(PamNormoT, lag.max = length(PamNormoT))
-
-
-
+rxx_Normo <- acf(PamNormoT, lag.max = length(PamNormoT))
+plot(rxx_Normo, main = "Auto-Correlación PAM normocapnia")
 
 #------------
 Rx_Normo <- acf(PamNormoT, lag.max = length(PamNormoT))
@@ -81,7 +84,8 @@ wx_Normo <- pwelch(Rx_Normo$acf, nfft = 256, fs = 5, plot = TRUE)
 #Función de transferencia
 
 tfm_Normo <- wRxy_Normo$spec/wx_Normo$spec
-plot(tfm_Normo, type="b")
+plot(tfm_Normo, type="b", main = "Función de transferencia Normocapnia",
+     xlab = "Frecuencia", ylab = "")
 
 
 
@@ -134,15 +138,20 @@ plot.ts(VFSCHiperT)
 periodPAM_HiperT <- pwelch(PamHiperT, nfft=256, fs = 5)
 
 
-#---Validación cruzada--- 
-rxy_Hiper <- ccf(PamHiperT,VFSCHiperT,lag.max = 200,pl=TRUE)
+#---Validación cruzada---
+rxy_Hiper <- ccf(PamHiperT,VFSCHiperT,pl=TRUE)
+plot(rxy_Hiper, main = "Correlacion Cruzada PAM y VFSC, normocapnia",
+     xlab = "Lag (Default)")
+rxy_Hiper <- ccf(PamHiperT,VFSCHiperT,lag.max = 750,pl=TRUE)
+plot(rxy_Hiper, main = "Correlacion Cruzada PAM y VFSC, normocapnia",
+     xlab = "Lag (750)")
 #Periodograma
 wRxy_Hiper <- pwelch(rxy_Hiper$acf, nfft = 256, fs = 5, plot = TRUE)
 
 
 #Autocorrelacion
 rxy_Hiper <- acf(PamHiperT, lag.max = length(PamHiperT))
-
+plot(rxy_Hiper, main = "Auto-Correlación PAM hipercapnia")
 
 #------------------------------------------------------------------
 Rx_Hiper <- acf(PamHiperT, lag.max = length(PamHiperT))

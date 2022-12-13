@@ -41,8 +41,8 @@ datos_Normo <- matrix(c(PAM_Normo,VFSC_Normo),ncol = 2)
 
 
 #Señales
-PamNormoT <- as.numeric(ts(data = PAM_Normo, frequency = 5, deltat = 0.2))
-VFSCNormoT <- as.numeric(ts(data = VFSC_Normo, frequency = 5, deltat = 0.2))
+PamNormoT <- as.numeric(ts(data = PAM_Normo, frequency = 5))
+VFSCNormoT <- as.numeric(ts(data = VFSC_Normo, frequency = 5))
 
 plot.ts(PamNormoT, main="PAM paciente normocapnia",
         xlab = "Tiempo", ylab = "PAM")
@@ -67,7 +67,7 @@ plot(rxy_Normo_max, main = "Correlacion Cruzada PAM y VFSC, normocapnia",
 
 
 #Periodograma suavizado
-wRxy_Normo <- pwelch(rxy_Normo$acf, nfft = 256, fs = 5, plot = TRUE)
+wRxy_Normo <- pwelch(rxy_Normo_max$acf, nfft = 256, fs = 5, plot = TRUE)
 
 
 
@@ -85,7 +85,7 @@ wx_Normo <- pwelch(Rx_Normo$acf, nfft = 256, fs = 5, plot = TRUE)
 
 tfm_Normo <- wRxy_Normo$spec/wx_Normo$spec
 plot(tfm_Normo, type="b", main = "Función de transferencia Normocapnia",
-     xlab = "Frecuencia", ylab = "")
+     xlab = "Frecuencia", ylab = "ft")
 
 
 
@@ -129,8 +129,10 @@ datos_Hiper <- matrix(c(PAM_Hiper,VFSC_Hiper),ncol = 2)
 PamHiperT <- as.numeric(ts(data = PAM_Hiper, frequency = 5))
 VFSCHiperT <- as.numeric(ts(data = VFSC_Hiper, frequency = 5))
 
-plot.ts(PamHiperT)
-plot.ts(VFSCHiperT)
+plot.ts(PamHiperT, main="PAM paciente hipercapnia",
+        xlab = "Tiempo", ylab = "PAM")
+plot.ts(VFSCHiperT, main= "VFSC paciente hipercapnia",
+        xlab = "Tiempo", ylab = "VFSC")
 
 
 
@@ -140,10 +142,10 @@ periodPAM_HiperT <- pwelch(PamHiperT, nfft=256, fs = 5)
 
 #---Validación cruzada---
 rxy_Hiper <- ccf(PamHiperT,VFSCHiperT,pl=TRUE)
-plot(rxy_Hiper, main = "Correlacion Cruzada PAM y VFSC, normocapnia",
+plot(rxy_Hiper, main = "Correlacion Cruzada PAM y VFSC, hipercapnia",
      xlab = "Lag (Default)")
 rxy_Hiper <- ccf(PamHiperT,VFSCHiperT,lag.max = 750,pl=TRUE)
-plot(rxy_Hiper, main = "Correlacion Cruzada PAM y VFSC, normocapnia",
+plot(rxy_Hiper, main = "Correlacion Cruzada PAM y VFSC, hipercapnia",
      xlab = "Lag (750)")
 #Periodograma
 wRxy_Hiper <- pwelch(rxy_Hiper$acf, nfft = 256, fs = 5, plot = TRUE)
